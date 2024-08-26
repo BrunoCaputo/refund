@@ -6,6 +6,8 @@ const category = document.getElementById("category");
 
 // HTML list elements
 const expenseList = document.querySelector("aside ul");
+const expenseQuantity = document.querySelector("aside header p span");
+const expenseTotal = document.querySelector("aside header h2");
 
 /**
  * Input event listener
@@ -25,7 +27,7 @@ amount.oninput = (event) => {
 /**
  * Format the currency amount into BRL pattern
  *
- * @param {string} value Value to format
+ * @param {number} value Value to format
  * @returns {string} Formatted value
  */
 function formatCurrencyBRL(value) {
@@ -114,8 +116,52 @@ function addExpense(newExpense) {
 
     // Add item into list
     expenseList.append(expenseHTMLItem);
+
+    updateTotals();
   } catch (error) {
     alert("Error on update expense list");
+    console.error(error);
+  }
+}
+
+/**
+ * Update total expenses and amount
+ */
+function updateTotals() {
+  try {
+    const items = expenseList.children;
+    const itemsQuantity = items.length;
+
+    expenseQuantity.textContent = `${itemsQuantity} ${
+      itemsQuantity > 1 ? "despesas" : "despesa"
+    }`;
+
+    let totalExpense = 0;
+
+    for (let item = 0; item < itemsQuantity; item++) {
+      const itemAmount = items[item].querySelector(".expense-amount");
+
+      let value = itemAmount.textContent
+        .replace(/[^\d,]/g, "")
+        .replace(",", ".");
+
+      value = parseFloat(value);
+
+      if (isNaN(value)) {
+        return alert(
+          "Error on calculate expense total amount. The value is not a number"
+        );
+      }
+
+      totalExpense += Number(value);
+    }
+
+    expenseTotal.innerHTML = `<small>R$</small>${formatCurrencyBRL(totalExpense)
+      .toUpperCase()
+      .replace("R$", "")
+      .trim()}`;
+  } catch (error) {
+    alert("Error on update totals");
     console.error(error);
   }
 }
