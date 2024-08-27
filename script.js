@@ -165,3 +165,14 @@ function updateTotals() {
     console.error(error);
   }
 }
+
+// List item click event listener
+expenseList.addEventListener("click", function (event) {
+  if (event.target.classList.contains("remove-icon")) {
+    // Remove parent
+    const item = event.target.closest(".expense");
+    item.remove();
+  }
+
+  updateTotals();
+});
